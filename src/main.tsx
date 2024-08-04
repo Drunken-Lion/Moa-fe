@@ -8,12 +8,21 @@ import {
 
 import './index.css';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <RepositoryProvider>
-      <QueryProvider>
-        <App />
-      </QueryProvider>
-    </RepositoryProvider>
-  </React.StrictMode>,
-);
+const enableMocking = async () => {
+  if (process.env.NODE_ENV !== 'dev') return;
+
+  const { worker } = await import('@/mocks/browser');
+  return worker.start();
+};
+
+enableMocking().then(() => {
+  ReactDOM.createRoot(document.getElementById('root')!).render(
+    <React.StrictMode>
+      <RepositoryProvider>
+        <QueryProvider>
+          <App />
+        </QueryProvider>
+      </RepositoryProvider>
+    </React.StrictMode>,
+  );
+});
